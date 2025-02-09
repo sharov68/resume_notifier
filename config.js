@@ -5,5 +5,6 @@ module.exports = {
 		port: 27017
 	},
 	apiKey: "my_API_key",
-	internetMonitoringInterval: 60
+	internetMonitoringInterval: 60,
+	adminChatId: 123456789
 };

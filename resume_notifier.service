@@ -1,0 +1,11 @@
+[Unit]
+Description=resume_notifier Service
+After=network.target mongod.service
+
+[Service]
+User=ubuntu
+Restart=always
+ExecStart=/bin/bash -c ". ~/.nvm/nvm.sh; nvm use v20; cd ~/services/resume_notifier/;exec node app.js"
+
+[Install]
+WantedBy=multi-user.target

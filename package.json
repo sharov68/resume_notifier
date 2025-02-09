@@ -10,6 +10,6 @@
   "description": "",
   "dependencies": {
     "mongodb": "~6.13.0",
-    "node-telegram-bot-api": "~0.66.0"
+    "node-telegram-bot-api": "^0.66.0"
   }
 }
