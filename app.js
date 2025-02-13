@@ -27,6 +27,7 @@ const helpAnswer = `
 /lastOffline1 - узнать время последнего отключения интернета;
 /lastOffline2 - узнать время последнего отключения сервиса;
 `;
+let emptyMessageCount = 0;
 
 (async () => {
 	await initMongoDB();
@@ -49,15 +50,22 @@ async function initMongoDB() {
 			const chatId = msg.chat.id;
 			if (chatId == cfg.adminChatId) {
 				const count = await messages.count();
-				await bot.sendMessage(chatId, `Привет, Босс!. На данный момент в БД ${count} сообщений.`);
+				await bot.sendMessage(chatId, `Привет, Босс!. На данный момент в БД ${count} сообщений.\nПустых сообщений ${emptyMessageCount}`);
 			} else {
 				const arr = _.split(msg.text, "/message");
 				const messageText = arr[1];
 				if (messageText) {
 					await bot.sendMessage(chatId, "Хорошо, я передам данное сообщение разработчику, он ответит как можно быстрее.");
 					await bot.sendMessage(cfg.adminChatId, `Новое сообщение от пользователя ${msg.from.first_name} ${msg.from.last_name} (@${msg.from.username}): "${msg.text}"`);
-					await saveToDB(msg);
+				} else {
+					emptyMessageCount++;
+					console.log("Empty Message Count:", emptyMessageCount);
+					if (emptyMessageCount > 500) {
+						await bot.sendMessage(cfg.adminChatId, `Привет, Босс!. Поступило ${emptyMessageCount} пустых сообщений.`);
+						emptyMessageCount = 0;
+					}
 				}
+				await saveToDB(msg);
 			}
 		});
 		bot.onText(/\/lastOffline1/, async msg => {
@@ -150,10 +158,10 @@ async function checkInternet() {
 	return new Promise(resolve => {
 		exec('ping -c 1 pepelac1.ddns.net', (error, stdout, stderr) => {
 			if (error || stderr) {
-				console.log(`${improveDate(new Date())} - Интернета нет`);
+				//console.log(`${improveDate(new Date())} - Интернета нет`);
 				resolve(0);
 			} else {
-				console.log(`${improveDate(new Date())} - Интернет есть`);
+				//console.log(`${improveDate(new Date())} - Интернет есть`);
 				resolve(1);
 			}
 		});
