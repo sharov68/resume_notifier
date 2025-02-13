@@ -51,10 +51,14 @@ async function initMongoDB() {
 				const count = await messages.count();
 				await bot.sendMessage(chatId, `Привет, Босс!. На данный момент в БД ${count} сообщений.`);
 			} else {
-				await bot.sendMessage(chatId, "Хорошо, я передам данное сообщение разработчику, он ответит как можно быстрее.");
-				await bot.sendMessage(cfg.adminChatId, `Новое сообщение от пользователя ${msg.from.first_name} ${msg.from.last_name} (@${msg.from.username}): "${msg.text}"`);
+				const arr = _.split(msg.text, "/message");
+				const messageText = arr[1];
+				if (messageText) {
+					await bot.sendMessage(chatId, "Хорошо, я передам данное сообщение разработчику, он ответит как можно быстрее.");
+					await bot.sendMessage(cfg.adminChatId, `Новое сообщение от пользователя ${msg.from.first_name} ${msg.from.last_name} (@${msg.from.username}): "${msg.text}"`);
+					await saveToDB(msg);
+				}
 			}
-			await saveToDB(msg);
 		});
 		bot.onText(/\/lastOffline1/, async msg => {
 			const chatId = msg.chat.id;
