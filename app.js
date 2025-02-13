@@ -117,7 +117,7 @@ async function checkLastOnlineStatus() {
 	const lastEvent = await online_history.findOne({}, { sort:{ _id:-1 } });
 	if (lastEvent) {
 		const currentDate = (new Date()).valueOf();
-		if (currentDate - (lastEvent._dt).valueOf() > internetMonitoringInterval) {
+		if (currentDate - (lastEvent._dt).valueOf() > internetMonitoringInterval*2) {
 			const data = {
 				status: "offline",
 				_dt: new Date(),
